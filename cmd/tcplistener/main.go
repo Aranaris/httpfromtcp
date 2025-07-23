@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/aranaris/httpfromtcp/internal/request"
+	"httpfromtcp/internal/request"
 )
 
 func main() {
