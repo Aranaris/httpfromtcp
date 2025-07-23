@@ -1,12 +1,11 @@
 package main
 
 import (
-	"bytes"
-	"errors"
 	"fmt"
-	"io"
 	"log"
 	"net"
+
+	"github.com/aranaris/httpfromtcp/internal/request"
 )
 
 func main() {
@@ -25,53 +24,15 @@ func main() {
 		fmt.Println("Connection has been accepted!")
 
 		func(conn net.Conn) {
-			lines := getLinesChannel(conn)
-
-			for line := range lines {
-				fmt.Printf("%s\n", line)
+			request, err := request.RequestFromReader(conn)
+			if err != nil {
+				log.Fatal(err)
 			}
-	
+			fmt.Printf("%+v\n", request)
+
 			fmt.Println("Connection Closed.")
 			conn.Close()
 		} (c)
 		
 	}	
-}
-
-func getLinesChannel(f net.Conn) <-chan string {
-	lines := make(chan string)
-
-	go func() {
-		data := make([]byte, 8)
-		line := ""
-		
-		for {
-				_, err := f.Read(data)
-				if err != nil {
-					f.Close()
-					if errors.Is(err, io.EOF) {
-						lines <- line
-						close(lines)
-						break
-					}
-					log.Fatal(err)
-				}
-
-				
-				parts := bytes.Split(data, []byte("\n"))
-		
-				data = nil
-				data = make([]byte, 8)
-
-				for i, v := range parts {
-					line += string(v)
-					if len(parts) > i + 1 {
-						lines <- line
-						line = ""
-					}
-				}
-			}
-		}()
-
-	return lines
 }
