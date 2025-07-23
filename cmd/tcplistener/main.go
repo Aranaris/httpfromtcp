@@ -28,7 +28,10 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			fmt.Printf("%+v\n", request)
+			fmt.Println("Request line: ")
+			fmt.Printf("- Method: %v\n", request.RequestLine.Method)
+			fmt.Printf("- Target: %v\n", request.RequestLine.RequestTarget)
+			fmt.Printf("- Version: %v\n", request.RequestLine.HttpVersion)
 
 			fmt.Println("Connection Closed.")
 			conn.Close()
