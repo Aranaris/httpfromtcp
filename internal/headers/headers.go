@@ -50,7 +50,12 @@ func (h Headers) Parse(data []byte) (n int, done bool, err error) {
 	fv = trailing_r.ReplaceAllString(fv, "")
 
 	fn = strings.ToLower(fn)
-	h[fn] = fv
+
+	if h[fn] != "" {
+		h[fn] = h[fn] + ", " + fv
+	} else {
+		h[fn] = fv
+	}
 
 	return len([]byte(str[0:loc[1]])), d, nil
 }

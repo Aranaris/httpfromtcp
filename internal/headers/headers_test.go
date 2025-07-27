@@ -61,6 +61,14 @@ func TestParseHeaders(t *testing.T) {
 	assert.Equal(t, "Value2", headers["field2"])
 	assert.True(t, done)
 
+	// Test: append field values to existing field name
+	data = []byte("Field1: Value3\r\n\r\n")
+	_, done, err = headers.Parse(data)
+	require.NoError(t, err)
+	require.NotNil(t,headers)
+	assert.Equal(t, "Value1, Value3", headers["field1"])
+	assert.False(t, done)
+
 	// Test: Invalid characters in header key
 	data = []byte("H©st: localhost:42069\r\n\r\n")
 	n, done, err = headers.Parse(data)
