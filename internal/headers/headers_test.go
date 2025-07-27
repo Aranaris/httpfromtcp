@@ -27,4 +27,22 @@ func TestParseHeaders(t *testing.T) {
 	assert.Equal(t, 0, n)
 	assert.False(t, done)
 
+	// Test: Valid single header with extra whitespace
+	headers = NewHeaders()
+	data = []byte("         Host:    localhost:1337      \r\n\r\n")
+	n, done, err = headers.Parse(data)
+	require.NoError(t, err)
+	require.NotNil(t, headers)
+	assert.Equal(t, "localhost:1337", headers["Host"])
+	assert.Equal(t, 40, n)
+	assert.False(t, done)
+
+	// Test: Valid Done
+	headers = NewHeaders()
+	data = []byte("\r\n   Host:localhost\r\n")
+	n, done, err = headers.Parse(data)
+	require.NoError(t, err)
+	assert.Equal(t, 0, n)
+	assert.True(t, done)
+	
 }

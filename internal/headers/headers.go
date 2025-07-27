@@ -29,8 +29,8 @@ func (h Headers) Parse(data []byte) (n int, done bool, err error) {
 	}
 
 
-	trailing_r := regexp.MustCompile(`\s$`)
-	leading_r := regexp.MustCompile(`^\s`)
+	trailing_r := regexp.MustCompile(`\s+$`)
+	leading_r := regexp.MustCompile(`^\s+`)
 
 	fn, fv, found := strings.Cut(str[0:loc[0]], ":")
 	if !found {
