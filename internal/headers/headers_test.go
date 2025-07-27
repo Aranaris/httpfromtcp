@@ -15,7 +15,7 @@ func TestParseHeaders(t *testing.T) {
 	n, done, err := headers.Parse(data)
 	require.NoError(t, err)
 	require.NotNil(t, headers)
-	assert.Equal(t, "localhost:42069", headers["Host"])
+	assert.Equal(t, "localhost:42069", headers["host"])
 	assert.Equal(t, 23, n)
 	assert.False(t, done)
 
@@ -41,11 +41,11 @@ func TestParseHeaders(t *testing.T) {
 	n, done, err = headers.Parse(data)
 	require.NoError(t, err)
 	require.NotNil(t, headers)
-	assert.Equal(t, "localhost:1337", headers["Host"])
+	assert.Equal(t, "localhost:1337", headers["host"])
 	assert.Equal(t, 40, n)
 	assert.False(t, done)
 	
-	// TODO Test: Valid 2 headers with existing headers
+	// Test: Valid 2 headers with existing headers
 	data = []byte("Field1: Value1\r\nField2: Value2\r\n\r\n")
 	i, done := 0, false
 	for !done {
@@ -56,8 +56,15 @@ func TestParseHeaders(t *testing.T) {
 		i += n
 	}
 	require.NoError(t, err)
-	assert.Equal(t, "localhost:1337", headers["Host"])
-	assert.Equal(t, "Value1", headers["Field1"])
-	assert.Equal(t, "Value2", headers["Field2"])
+	assert.Equal(t, "localhost:1337", headers["host"])
+	assert.Equal(t, "Value1", headers["field1"])
+	assert.Equal(t, "Value2", headers["field2"])
 	assert.True(t, done)
+
+	// Test: Invalid characters in header key
+	data = []byte("H©st: localhost:42069\r\n\r\n")
+	n, done, err = headers.Parse(data)
+	require.Error(t, err)
+	assert.Equal(t, 0, n)
+	assert.False(t, done)
 }
