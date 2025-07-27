@@ -28,6 +28,7 @@ func (h Headers) Parse(data []byte) (n int, done bool, err error) {
 		return 0, true, nil
 	}
 
+	validchars_r := regexp.MustCompile(`[^A-Za-z0-9\!\#\$\%\&\'\*\+\-\.\^\_\|\~` + "\\`]")
 
 	trailing_r := regexp.MustCompile(`\s+$`)
 	leading_r := regexp.MustCompile(`^\s+`)
@@ -41,9 +42,14 @@ func (h Headers) Parse(data []byte) (n int, done bool, err error) {
 	}
 
 	fn = leading_r.ReplaceAllString(fn, "")
+	if len(fn) > 0 && validchars_r.MatchString(fn) {
+		return 0, false, errors.New("invalid character in field name")
+	}
+
 	fv = leading_r.ReplaceAllString(fv, "")
 	fv = trailing_r.ReplaceAllString(fv, "")
 
+	fn = strings.ToLower(fn)
 	h[fn] = fv
 
 	return len([]byte(str[0:loc[1]])), d, nil
